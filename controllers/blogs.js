@@ -55,10 +55,10 @@ module.exports.get_blog_by_id = async (req, res) => {
 
 module.exports.get_blog_by_username = async (req, res) => {
   try {
-    const blogs = await Blog.find({ username: req.params.id });
+    const blogs = await Blog.find({ username: req.params.username });
     res.status(200).json(blogs)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({err});
   }
 };
 

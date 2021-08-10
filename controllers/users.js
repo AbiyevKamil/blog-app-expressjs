@@ -26,9 +26,9 @@ module.exports.find_user_by_id = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, ...others } = user._doc;
-    res.status(200).json(others);
+    res.json({ user: others, status_code: 200 });
   } catch (err) {
-    res.status(500).json(err);
+    res.json({ error: err, status_code: 500 });
   }
 };
 

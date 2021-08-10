@@ -5,10 +5,10 @@ const userController = require('../controllers/users');
 router.delete('/:id', userController.delete_user);
 
 // Get User by ID
-router.get('/:id', userController.find_user_by_id);
+router.get('/find_by_id/:id', userController.find_user_by_id);
 
 // Get User by username
-router.get('/:username', userController.find_user_by_username);
+router.get('/find_by_username/:username', userController.find_user_by_username);
 
 // Forgot Password Send Email
 router.post('/reset-password', userController.forgot_password_send_email);

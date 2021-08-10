@@ -27,24 +27,28 @@ module.exports.register_post = async (req, res) => {
     if (errors.length < 1) {
       const salt = await bcrypt.genSalt(10);
       const hashedPass = await bcrypt.hash(password, salt);
-      const user = await User.findOne({ email: email, username: username })
+      let user = await User.findOne({ email: email })
       if (user) {
         errors.push({ msg: "Email or username already registered." })
-        res.status(401).json(errors)
+        res.json({ error: errors, status_code: 401 });
       } else {
-        const newUser = new User({
-          username: username,
-          email: email,
-          password: hashedPass,
-        });
-        const user = await newUser.save();
-        // const token = createToken(user._id);
-        // res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(200).json(user);
+        user = await User.findOne({ username: username })
+        if (user) {
+          errors.push({ msg: "Email or username already registered." })
+          res.json({ error: errors, status_code: 401 });
+        } else {
+          const newUser = new User({
+            username: username,
+            email: email,
+            password: hashedPass,
+          });
+          const user = await newUser.save();
+          res.json({ user: user, status_code: 200 });
+        }
       }
     }
     else {
-      res.status(401).json(errors)
+      res.json({ error: errors, status_code: 401 });
     }
   } catch (err) {
     res.status(500).json(err)
@@ -54,6 +58,7 @@ module.exports.register_post = async (req, res) => {
 module.exports.login_post = async (req, res) => {
   try {
     const { email, password } = req.body;
+    let errors = [];
     const user = await User.findOne({ email: email });
     if (user) {
       const isValid = await bcrypt.compare(password, user.password)
@@ -61,12 +66,17 @@ module.exports.login_post = async (req, res) => {
         const { password, ...others } = user._doc;
         // const token = createToken(user._id);
         // res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(200).json(others);
+        res.json({ user: others, status_code: 200 });
       } else {
-        res.status(401).json("Wrong password.")
+        // res.status(401).json("Wrong password.")
+        errors.push({ msg: "Wrong password." })
+        res.json({ error: errors, status_code: 401 });
       }
     } else {
-      res.status(401).json("Email is not registered.")
+      // res.status(401).json("Email is not registered.")
+      errors.push({ msg: "Email is not registered." })
+      res.json({ error: errors, status_code: 401 });
+
     }
   } catch (err) {
     res.status(500).json(err)

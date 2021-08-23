@@ -35,11 +35,14 @@ module.exports.find_user_by_id = async (req, res) => {
 // Find User By Username
 module.exports.find_user_by_username = async (req, res) => {
   try {
+    console.log('1')
     const user = await User.findOne({ username: req.params.username });
+    console.log('2')
     const { password, ...others } = user._doc;
+    console.log('3')
     res.status(200).json(others);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json("Errooooooooorrrrrrr");
   }
 };
 
